@@ -68,8 +68,17 @@ async function run() {
 
     app.get('/products', async (req, res) => {
 
-      const query ={}
       const filter = req.query
+      const search = filter.search 
+      const query ={
+        // price : { $lt : 100 , $gt: 50 }
+        // name : {  $regex : search  }
+
+      }
+
+      if (search) {
+        query.name = { $regex: search, $options: 'i' }; // 'i' for case-insensitive
+      }
       console.log("query 3 ", filter)
 
       const options = {
@@ -83,9 +92,11 @@ async function run() {
 
       console.log('pagination query ', page, size)
       const result = await productsCollection.find( query ,options  )
-        .skip(page * size)
+      .skip(page * size)
         .limit(size)
         .toArray()
+        // console.log( result)
+
       res.send(result)
 
     })
